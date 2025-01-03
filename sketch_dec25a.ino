@@ -23,8 +23,8 @@ struct User {
 
 // List of authorized users
 User authorizedUsers[] = {
-  {"72 57 AC 51", "Elias M."},
-  {"B8 08 2A 12", "Pop Smoke"},
+  {"72 57 AC 51", "Mola W."},
+  {"B8 08 2A 12", "Bayabel "},
   {"11 22 33 44", "Abera Molla"}
 };
 const int userCount = sizeof(authorizedUsers) / sizeof(authorizedUsers[0]);
@@ -66,7 +66,7 @@ void loop() {
   lcd.setCursor(0, 0);
   lcd.print("Scanning.....");
   lcd.setCursor(0, 1);
-  delay(2000);
+  delay(1000);
 
   // Check if UID is authorized and find user
   String userName = "";
@@ -110,7 +110,7 @@ void handleAccess(String userName, String scannedUID) {
     lcd.print("Welcome,");
     lcd.setCursor(0, 1);
     lcd.print(userName);
-    delay(2000);
+    delay(1000);
 
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -131,7 +131,7 @@ void handleAccess(String userName, String scannedUID) {
     lcd.print("Goodbye,");
     lcd.setCursor(0, 1);
     lcd.print(userName);
-    delay(2000);
+    delay(1000);
     setup();
   } else {
     // Deny if a different user tries to leave
@@ -140,7 +140,7 @@ void handleAccess(String userName, String scannedUID) {
     lcd.print("Access Denied");
     lcd.setCursor(0, 1);
     lcd.print("User Active!");
-    delay(2000);
+    delay(1000);
   }
 
   digitalWrite(buzzer, HIGH);
@@ -165,5 +165,5 @@ void denyAccess() {
     delay(200);
   }
 
-  delay(2000);
+  delay(1000);
 }

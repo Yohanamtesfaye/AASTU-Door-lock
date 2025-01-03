@@ -16,11 +16,17 @@ def get_db_connection():
     )
 
 @app.route('/api/rfid-logs', methods=['GET'])
+@app.route('/api/rfid-logs', methods=['GET'])
 def get_rfid_logs():
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute('SELECT * FROM RFID_Logs ORDER BY Timestamp DESC')
+            # Modify the query to exclude unwanted data
+            cursor.execute("""
+                SELECT * FROM RFID_Logs 
+                WHERE NOT Name LIKE 'Scanning%'
+                ORDER BY Timestamp DESC
+            """)
             rows = cursor.fetchall()
         return jsonify(rows), 200
     except mysql.connector.Error as e:

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const RfidLogs = () => {
+  const { i18n, t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -183,7 +186,40 @@ const RfidLogs = () => {
     },
     monospace: {
       fontFamily: 'monospace'
+    },
+    languageDropdown: {
+      padding: '0.5rem 1rem',
+      backgroundColor: theme.primary,
+      color: theme.white,
+      border: 'none',
+      borderRadius: '0.375rem',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+      outline: 'none',
+      '&:hover': {
+        backgroundColor: '#B08E26',
+      },
+      '&:focus': {
+        boxShadow: '0 0 0 2px rgba(197, 160, 45, 0.5)',
+      },
+    },
+    logoutLink: {
+      marginLeft: '1rem',
+      padding: '0.5rem 1rem',
+      backgroundColor: theme.primary,
+      color: theme.white,
+      textDecoration: 'none',
+      borderRadius: '0.375rem',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      transition: 'background-color 0.2s',
+      '&:hover': {
+        backgroundColor: '#B08E26',
+      },
     }
+  
   };
 
   const fetchLogs = async () => {
@@ -205,12 +241,13 @@ const RfidLogs = () => {
   }, []);
 
   const filteredLogs = logs.filter(log => {
+    const isScanning = log.Name.toLowerCase().includes('scanning'); 
     const nameMatch = log.Name.toLowerCase().includes(filters.name.toLowerCase());
     const roomMatch = !filters.room || log.Room === filters.room;
     const dateMatch = !filters.date || 
       new Date(log.Timestamp).toLocaleDateString() === new Date(filters.date).toLocaleDateString();
-    return nameMatch && roomMatch && dateMatch;
-  });
+    return !isScanning && nameMatch && roomMatch && dateMatch;
+  }); 
 
   return (
     <div style={styles.container}>
@@ -222,9 +259,22 @@ const RfidLogs = () => {
             style={styles.logo}
           />
           <div>
-            <h1 style={styles.headerTitle}>AASTU Door Lock History</h1>
-            <p style={styles.headerSubtitle}>Monitor and track room access</p>
+            <h1 style={styles.headerTitle}>{t('aastu_topic')}</h1>
+            <p style={styles.headerSubtitle}>{t('moniter')}</p>
           </div>
+          <div style={{ marginLeft: 'auto', position: 'relative' }}>
+          <select
+            onChange={(e) => i18n.changeLanguage(e.target.value)}
+            value={i18n.language}
+            style={styles.languageDropdown}
+          >
+            <option value="en">🇺🇸 English</option>
+            <option value="am">🇪🇹 አማርኛ</option>
+          </select>
+        </div>
+        <Link to='/' style={styles.logoutLink}>
+            {t('logout')}
+          </Link>
         </div>
       </header>
 
@@ -237,14 +287,14 @@ const RfidLogs = () => {
 
         <div style={styles.card}>
           <div style={styles.cardHeader}>
-            <h2 style={styles.cardTitle}>Filters</h2>
+            <h2 style={styles.cardTitle}>{t('Filters')}</h2>
           </div>
           <div style={styles.filterGrid}>
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Search by Name</label>
+              <label style={styles.label}>{t('Search_by_Name')}</label>
               <input
                 type="text"
-                placeholder="Enter name..."
+                placeholder={t('Enter name')}
                 value={filters.name}
                 onChange={(e) => setFilters(prev => ({ ...prev, name: e.target.value }))}
                 style={styles.input}
@@ -252,13 +302,13 @@ const RfidLogs = () => {
             </div>
 
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Room</label>
+              <label style={styles.label}>{t('Room')}</label>
               <select
                 value={filters.room}
                 onChange={(e) => setFilters(prev => ({ ...prev, room: e.target.value }))}
                 style={styles.select}
               >
-                <option value="">All Rooms</option>
+                <option value="">{t('allroom')}</option>
                 <option value="Room101">Room 101</option>
                 <option value="Room102">Room 102</option>
                 <option value="Room103">Room 103</option>
@@ -266,7 +316,7 @@ const RfidLogs = () => {
             </div>
 
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Date</label>
+              <label style={styles.label}>{t('Date')}</label>
               <input
                 type="date"
                 value={filters.date}
@@ -280,7 +330,7 @@ const RfidLogs = () => {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={styles.cardTitle}>Access Logs</h2>
+              <h2 style={styles.cardTitle}>{t('acess_log')}</h2>
               <button 
                 onClick={fetchLogs}
                 disabled={loading}
@@ -299,19 +349,19 @@ const RfidLogs = () => {
               <table style={styles.table}>
                 <thead>
                   <tr>
-                    <th style={styles.th}>ID</th>
-                    <th style={styles.th}>UID</th>
-                    <th style={styles.th}>Name</th>
-                    <th style={styles.th}>Room</th>
-                    <th style={styles.th}>Entry Time</th>
-                    <th style={styles.th}>Leave Time</th>
+                    <th style={styles.th}>{t('ID')}</th>
+                    <th style={styles.th}>{t('UID')}</th>
+                    <th style={styles.th}>{t('Name')}</th>
+                    <th style={styles.th}>{t('Room')}</th>
+                    <th style={styles.th}>{t('Entry_Time')}</th>
+                    <th style={styles.th}>{t('Leave_Time')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredLogs.length === 0 ? (
                     <tr>
                       <td colSpan={6} style={{ ...styles.td, textAlign: 'center' }}>
-                        No logs found matching the current filters.
+                        {t('no_log')}
                       </td>
                     </tr>
                   ) : (
@@ -328,7 +378,7 @@ const RfidLogs = () => {
                           {log.LeaveTime ? (
                             new Date(log.LeaveTime).toLocaleString()
                           ) : (
-                            <span style={styles.pending}>On Going Class</span>
+                            <span style={styles.pending}>{t('ongoing')}</span>
                           )}
                         </td>
                       </tr>
